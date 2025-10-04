@@ -30,8 +30,8 @@ const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 async function requestWithRetry<T>(fn: () => Promise<T>, retries = 3, backoff = 500): Promise<T | string> {
   try {
     return await fn();
-  } catch (err: any) {
-    const status = err?.response?.status;
+  } catch (err) {
+    const status = err && err.response && err.response.status;
     if ((status === 429 || status === 502 || status === 503 || status === 504) && retries > 0) {
       // transient error, retry with exponential backoff
       await sleep(backoff);
@@ -41,7 +41,7 @@ async function requestWithRetry<T>(fn: () => Promise<T>, retries = 3, backoff = 
     log.error(err);
 
     // for other errors return the message to preserve existing API
-    return err.message || 'Request failed';
+    return (err && err.message) || 'Request failed';
   }
 }
 
