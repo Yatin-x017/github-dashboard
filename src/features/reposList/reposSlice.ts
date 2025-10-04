@@ -3,6 +3,7 @@ import { AppThunk, AppDispatch } from 'app/store';
 import { fetchRepos } from 'api/githubAPI';
 import { Repo } from 'features/reposList/types';
 import { setTotalPages } from 'features/pagination/pageSlice';
+import log from 'utils/log';
 
 type IRepos = Repo[];
 
@@ -20,7 +21,11 @@ export const loadRepos = (q: string, page: number): AppThunk => async (dispatch:
   const repos = await fetchRepos(q, page);
 
   if (typeof repos === 'string') {
-    throw repos;
+    // Instead of throwing (which bubbles to the ErrorBoundary), handle gracefully:
+    log.error('Failed to load repositories:', repos);
+    dispatch(reposSlice.actions.fetchRepos([]));
+    dispatch(setTotalPages(0));
+    return;
   }
 
   dispatch(reposSlice.actions.fetchRepos(repos.items));

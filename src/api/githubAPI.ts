@@ -25,36 +25,44 @@ interface IConfig {
     },
 }
 
+const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+async function requestWithRetry<T>(fn: () => Promise<T>, retries = 3, backoff = 500): Promise<T | string> {
+  return fn().catch(async (err) => {
+    const status = err && err.response && err.response.status;
+    if ((status === 429 || status === 502 || status === 503 || status === 504) && retries > 0) {
+      // transient error, retry with exponential backoff
+      await sleep(backoff);
+      return requestWithRetry(fn, retries - 1, backoff * 2);
+    }
+
+    log.error(err);
+
+    // for other errors return the message to preserve existing API
+    return (err && err.message) || 'Request failed';
+  });
+}
+
 export const fetchRepos = async (q: string, page: number): Promise<GetReposResponse | string> => {
-  try {
-    const config: IConfig = {
-      params: {
-        q,
-        page,
-        sort: 'stars',
-        order: 'desc',
-        per_page: REPOS_PER_PAGE,
-      },
-    };
+  const config: IConfig = {
+    params: {
+      q,
+      page,
+      sort: 'stars',
+      order: 'desc',
+      per_page: REPOS_PER_PAGE,
+    },
+  };
 
-    const response = await axios.get<GetReposResponse>(SEARCH_URL_BASE, config);
-
-    return response.data;
-  } catch (e) {
-    log.error(e);
-    return e.message;
-  }
+  const result = await requestWithRetry(() => axios.get<GetReposResponse>(SEARCH_URL_BASE, config));
+  if (typeof result === 'string') return result;
+  return (result as any).data as GetReposResponse;
 };
 
 export const fetchRepoDetails = async (id: string): Promise<Repo | string> => {
-  try {
-    const response = await axios.get<Repo>(`${REPO_URL_BASE}/${id}`);
-
-    return response.data;
-  } catch (e) {
-    log.error(e);
-    return e.message;
-  }
+  const result = await requestWithRetry(() => axios.get<Repo>(`${REPO_URL_BASE}/${id}`));
+  if (typeof result === 'string') return result;
+  return (result as any).data as Repo;
 };
 
 /**
@@ -64,52 +72,52 @@ export const fetchRepoDetails = async (id: string): Promise<Repo | string> => {
  * sorts them by the number of commits per contributor in descending order.
  */
 export const fetchContributors = async (url: string): Promise<Contributor[] | string> => {
-  try {
-    const config = {
-      params: {
-        per_page: CONTRIBUTORS_PER_PAGE,
-      },
-    };
+  const config = {
+    params: {
+      per_page: CONTRIBUTORS_PER_PAGE,
+    },
+  };
 
-    const response = await axios.get<Contributor[]>(url, config);
-
-    return response.data;
-  } catch (e) {
-    log.error(e);
-    return e.message;
-  }
+  const result = await requestWithRetry(() => axios.get<Contributor[]>(url, config));
+  if (typeof result === 'string') return result;
+  return (result as any).data as Contributor[];
 };
 
 /**
  *  https://developer.github.com/v3/repos/#list-repository-languages
  */
 export const fetchLanguages = async (url: string): Promise<string[] | [] | string> => {
-  try {
-    const response = await axios.get<{[key:string]: number}>(url);
+  const result = await requestWithRetry(() => axios.get<{[key:string]: number}>(url));
+  if (typeof result === 'string') return result;
+  return Object.keys((result as any).data);
+};
 
-    return Object.keys(response.data);
-  } catch (e) {
-    log.error(e);
-    return e.message;
-  }
+let warnedNoToken = false;
+
+export const fetchUserRepos = async (username: string, per_page = 100): Promise<Repo[] | string> => {
+  const result = await requestWithRetry(() => axios.get<Repo[]>(`https://api.github.com/users/${username}/repos`, { params: { per_page } }));
+  if (typeof result === 'string') return result;
+  return (result as any).data as Repo[];
 };
 
 axios.interceptors.request.use((config: Partial<IConfig> = {}) => {
   try {
-    // eslint-disable-next-line global-require
-    const { GITHUB_OAUTH_TOKEN } = require('secret.json');
+    // Prefer token provided via environment variable REACT_APP_GITHUB_OAUTH_TOKEN
+    // (create-react-app exposes REACT_APP_* vars to the browser at build time)
+    const token = process?.env?.REACT_APP_GITHUB_OAUTH_TOKEN || (typeof window !== 'undefined' && (window as any).__GITHUB_OAUTH_TOKEN__);
 
-    if (!GITHUB_OAUTH_TOKEN) {
-      throw new Error('No github OAuth Access Token provided or config field key "GITHUB_OAUTH_TOKEN" is misspelled.');
+    if (token) {
+      // eslint-disable-next-line no-param-reassign
+      config.headers = { ...config.headers, Authorization: `token ${token}` };
+    } else if (!warnedNoToken) {
+      // Log only once: missing token will cause unauthenticated requests with low rate limits
+      warnedNoToken = true;
+      log.error('No GitHub OAuth token provided (set REACT_APP_GITHUB_OAUTH_TOKEN). Requests will be unauthenticated and rate-limited.');
+      log.error(`Read the README Access token section for more details: ${PROJECT_REPO_LINK}#access-token`);
     }
-
-    // eslint-disable-next-line no-param-reassign
-    config.headers = { ...config.headers, Authorization: `token ${GITHUB_OAUTH_TOKEN}` };
   } catch (e) {
     log.error(e);
-    log.error(`Read the README Access token section for more details: ${PROJECT_REPO_LINK}#access-token`);
-  } finally {
-    // eslint-disable-next-line no-unsafe-finally
-    return config;
   }
+
+  return config;
 });
