@@ -89,27 +89,17 @@ export const fetchContributors = async (url: string): Promise<Contributor[] | st
  *  https://developer.github.com/v3/repos/#list-repository-languages
  */
 export const fetchLanguages = async (url: string): Promise<string[] | [] | string> => {
-  try {
-    const response = await axios.get<{[key:string]: number}>(url);
-
-    return Object.keys(response.data);
-  } catch (e) {
-    log.error(e);
-    return e.message;
-  }
+  const result = await requestWithRetry(() => axios.get<{[key:string]: number}>(url));
+  if (typeof result === 'string') return result;
+  return Object.keys((result as any).data);
 };
 
 let warnedNoToken = false;
 
 export const fetchUserRepos = async (username: string, per_page = 100): Promise<Repo[] | string> => {
-  try {
-    const response = await axios.get<Repo[]>(`https://api.github.com/users/${username}/repos`, { params: { per_page } });
-
-    return response.data;
-  } catch (e) {
-    log.error(e);
-    return e.message;
-  }
+  const result = await requestWithRetry(() => axios.get<Repo[]>(`https://api.github.com/users/${username}/repos`, { params: { per_page } }));
+  if (typeof result === 'string') return result;
+  return (result as any).data as Repo[];
 };
 
 axios.interceptors.request.use((config: Partial<IConfig> = {}) => {
