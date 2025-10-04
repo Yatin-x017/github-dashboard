@@ -26,6 +26,9 @@ const App = () => {
                 <Route path={ROUTES.MAIN} exact>
                   <MainPage ref={ref} />
                 </Route>
+                <Route path={ROUTES.PROFILE} exact>
+                  <React.Suspense fallback={<Loading />}><MainPage /></React.Suspense>
+                </Route>
                 <Route path={ROUTES.REPO_CARD} exact>
                   <RepoDetails ref={ref} />
                 </Route>
