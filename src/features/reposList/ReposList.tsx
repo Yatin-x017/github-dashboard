@@ -14,7 +14,7 @@ const ReposList = (): JSX.Element => {
   const renderedRepos = useMemo(() => repos.length > 0 && (
   <ul className="repo-list">
     {repos.map(({
-      id, name, stargazers_count, updated_at, html_url,
+      id, name, stargazers_count, updated_at, html_url, description, owner, contributors, languages_url, contributors_url, languages,
     }) => (
       <li key={id} className="repo-list--item">
         <RepoCard
@@ -23,6 +23,12 @@ const ReposList = (): JSX.Element => {
           stargazers_count={stargazers_count}
           updated_at={updated_at}
           html_url={html_url}
+          description={description}
+          owner={owner}
+          contributors={contributors}
+          languages_url={languages_url}
+          contributors_url={contributors_url}
+          languages={languages}
         />
       </li>
     ))}
