@@ -90,6 +90,11 @@ const RepoCard = memo(({
               </h3>
               {primaryLang && <span className="repo-card__language">{primaryLang}</span>}
               {description && <div className="repo-card__description">{description}</div>}
+              {hovered && summary && (
+                <div className="repo-card__summary" aria-live="polite">
+                  {summary}
+                </div>
+              )}
             </div>
           </div>
 
