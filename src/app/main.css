@@ -98,23 +98,25 @@ a:hover,
 .theme-dark .search-input__container { filter: drop-shadow(0 2px 12px rgba(0,0,0,.35)); }
 
 .theme-dark .search-input {
-    background-color: #161b22;
-    border: 1px solid #30363d;
-    color: #9ec1ff;
-    transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+    background-color: #0f1419;
+    border: 1px solid #23292f;
+    color: #dbeeff;
+    transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
 }
 
-.theme-dark .search-input::placeholder { color: #6e7681; }
+.theme-dark .search-input:focus { box-shadow: 0 8px 24px rgba(2,6,23,.36); }
+.theme-dark .search-input::placeholder { color: #5f6b77; }
 
 /* Repo list and cards */
 .theme-dark .repo-list { color: #9ec1ff; }
 .theme-dark .repos-list__container { background: transparent; }
-.theme-dark .repo-list--item { border-top: 1px solid #30363d; transition: background-color .2s ease; }
-.theme-dark .repo-list--item:hover { background-color: rgba(230,245,255,.03); box-shadow: 0 6px 18px rgba(2,6,23,.6); transform: translateY(-1px); }
+.theme-dark .repo-list--item { border-top: none; background: #0f1419; border-radius: 12px; box-shadow: 0 6px 20px rgba(2,6,23,.28); transition: background-color .18s ease, transform .12s ease, box-shadow .18s ease; }
+.theme-dark .repo-list--item:hover { background-color: rgba(230,245,255,.02); box-shadow: 0 18px 40px rgba(2,6,23,.48); transform: translateY(-6px); }
 .theme-dark .repo-card__name--link { color: #dbeeff; transition: color .18s ease, text-shadow .18s ease; }
 .theme-dark .repo-card__name--link:hover, .theme-dark .repo-card__name--link:focus {
-    color: #79b8ff; text-decoration: underline;
+    color: #eaf6ff; text-decoration: underline;
 }
+.theme-dark .repo-card__card { background: #0f1419; box-shadow: 0 6px 28px rgba(2,6,23,.38); }
 .theme-dark .icon--gray { color: #8b949e; }
 
 /* Paginator */
