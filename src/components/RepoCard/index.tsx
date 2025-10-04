@@ -1,20 +1,38 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { shallowEqual, useSelector } from 'react-redux';
 import { Repo } from 'features/reposList/types';
 import { formatDate } from 'utils/helpers';
 import { RootState } from 'app/rootReducer';
+import { fetchLanguages } from 'api/githubAPI';
 import 'components/RepoCard/index.css';
 
 const RepoCard = memo(({
-  id, name, stargazers_count, updated_at, html_url, description, owner, contributors, languages,
+  id, name, stargazers_count, updated_at, html_url, description, owner, contributors, languages, languages_url,
 }: Partial<Repo>) => {
   const { t } = useTranslation();
   const currentLocale = useSelector((state: RootState) => state.i18n.currentLocale);
 
+  const [langs, setLangs] = useState<string[] | undefined>(languages as string[] | undefined);
+  useEffect(() => {
+    let mounted = true;
+    if (!langs && languages_url) {
+      (async () => {
+        const res = await fetchLanguages(languages_url);
+        if (!mounted) return;
+        if (typeof res === 'string') {
+          setLangs([]);
+        } else {
+          setLangs(res);
+        }
+      })();
+    }
+    return () => { mounted = false; };
+  }, [langs, languages_url]);
+
   const stackKeywords = ['JavaScript', 'TypeScript', 'React', 'Node', 'Python', 'Go', 'Ruby'];
-  const compatible = languages && languages.some(l => stackKeywords.includes(l)) ? 'Likely' : 'Unknown';
+  const compatible = langs && langs.some(l => stackKeywords.includes(l)) ? 'Likely' : 'Unknown';
 
   const contributorsCount = contributors ? contributors.length : undefined;
   const communityHealth = (stargazers_count && contributorsCount) ? Math.min(100, Math.round((contributorsCount / Math.max(1, stargazers_count)) * 100)) : undefined;
