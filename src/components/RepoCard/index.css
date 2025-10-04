@@ -17,16 +17,15 @@
 
 .repo-card__left {
     display: flex;
-    gap: 0.8rem;
-    align-items: center;
+    flex-direction: column;
+    gap: 0.2rem;
+    align-items: flex-start;
 }
 
-.repo-card__logo {
-    width: 48px;
-    height: 48px;
-    border-radius: 8px;
-    object-fit: cover;
-    box-shadow: 0 6px 18px rgba(2,6,23,.08);
+.repo-card__title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
 }
 
 .repo-card__meta {
