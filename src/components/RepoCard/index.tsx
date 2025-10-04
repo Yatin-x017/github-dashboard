@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { shallowEqual, useSelector } from 'react-redux';
@@ -56,6 +56,47 @@ const RepoCard = memo(({
   };
 
   const flag = computeFlag();
+
+  // Emoji reaction flags (persisted in localStorage)
+  const [flags, setFlags] = useState<string[]>([]);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const pickerRef = useRef<HTMLDivElement | null>(null);
+
+  const emojiOptions = [
+    { flag: 'red', emoji: '🔴', label: 'Critical' },
+    { flag: 'yellow', emoji: '🟡', label: 'At risk' },
+    { flag: 'blue', emoji: '🔵', label: 'Info' },
+    { flag: 'green', emoji: '🟢', label: 'Healthy' },
+    { flag: 'violet', emoji: '🟣', label: 'Popular' },
+  ];
+
+  useEffect(() => {
+    // load flags for this repo
+    if (!id) return;
+    const { getFlagsFor } = require('utils/flags');
+    const f = getFlagsFor(id);
+    setFlags(f);
+  }, [id]);
+
+  const toggleFlag = (f: string) => {
+    if (!id) return;
+    const { toggleFlagFor } = require('utils/flags');
+    const updated = toggleFlagFor(id, f as any);
+    setFlags(updated);
+    setPickerOpen(false);
+  };
+
+  // close picker when clicking outside
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => {
+      if (!pickerOpen) return;
+      if (!pickerRef.current) return;
+      if (!(e.target instanceof Node)) return;
+      if (!pickerRef.current.contains(e.target)) setPickerOpen(false);
+    };
+    document.addEventListener('click', onDoc);
+    return () => document.removeEventListener('click', onDoc);
+  }, [pickerOpen]);
 
 
   return (
@@ -122,6 +163,27 @@ const RepoCard = memo(({
 
         <div className="repo-card__footer">
           <div className="repo-card__badges">
+            {/* Emoji flag reactions */}
+            <div className="repo-card__emoji-reactions" ref={null}>
+              {flags && flags.map((f) => (
+                <button key={f} type="button" className={`repo-card__emoji repo-card__emoji--${f}`} onClick={() => toggleFlag(f)} aria-label={`flag-${f}`}>
+                  {f === 'red' ? '🔴' : f === 'yellow' ? '🟡' : f === 'green' ? '🟢' : f === 'violet' ? '🟣' : '🔵'}
+                </button>
+              ))}
+              <button type="button" className="repo-card__emoji-add" onClick={(e) => { e.stopPropagation(); setPickerOpen((v) => !v); }} aria-expanded={pickerOpen} aria-label="add-flag">➕</button>
+
+              {pickerOpen && (
+                <div className="repo-card__emoji-picker" role="menu" aria-label="flag-picker" ref={pickerRef}>
+                  {emojiOptions.map((opt) => (
+                    <button key={opt.flag} type="button" className={`repo-card__emoji repo-card__emoji--${opt.flag}`} onClick={() => toggleFlag(opt.flag)} aria-pressed={flags.includes(opt.flag)}>
+                      <span className="repo-card__emoji-icon">{opt.emoji}</span>
+                      <span className="repo-card__emoji-label">{opt.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {flag && <span className={`repo-card__flag repo-card__flag--${flag}`} aria-hidden>{
               flag === 'red' ? 'Critical' : flag === 'yellow' ? 'At risk' : flag === 'green' ? 'Healthy' : flag === 'violet' ? 'Popular' : 'Info'
             }</span>}
