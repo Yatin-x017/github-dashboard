@@ -25,25 +25,40 @@ interface IConfig {
     },
 }
 
-export const fetchRepos = async (q: string, page: number): Promise<GetReposResponse | string> => {
+const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+async function requestWithRetry<T>(fn: () => Promise<T>, retries = 3, backoff = 500): Promise<T | string> {
   try {
-    const config: IConfig = {
-      params: {
-        q,
-        page,
-        sort: 'stars',
-        order: 'desc',
-        per_page: REPOS_PER_PAGE,
-      },
-    };
+    return await fn();
+  } catch (err: any) {
+    const status = err?.response?.status;
+    if ((status === 429 || status === 502 || status === 503 || status === 504) && retries > 0) {
+      // transient error, retry with exponential backoff
+      await sleep(backoff);
+      return requestWithRetry(fn, retries - 1, backoff * 2);
+    }
 
-    const response = await axios.get<GetReposResponse>(SEARCH_URL_BASE, config);
+    log.error(err);
 
-    return response.data;
-  } catch (e) {
-    log.error(e);
-    return e.message;
+    // for other errors return the message to preserve existing API
+    return err.message || 'Request failed';
   }
+}
+
+export const fetchRepos = async (q: string, page: number): Promise<GetReposResponse | string> => {
+  const config: IConfig = {
+    params: {
+      q,
+      page,
+      sort: 'stars',
+      order: 'desc',
+      per_page: REPOS_PER_PAGE,
+    },
+  };
+
+  const result = await requestWithRetry(() => axios.get<GetReposResponse>(SEARCH_URL_BASE, config));
+  if (typeof result === 'string') return result;
+  return (result as any).data as GetReposResponse;
 };
 
 export const fetchRepoDetails = async (id: string): Promise<Repo | string> => {
