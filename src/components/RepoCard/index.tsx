@@ -15,51 +15,53 @@ const RepoCard = memo(({
 
   return (
     <main className="repo-card__container">
-      <div className="repo-card">
-        <h3 className="repo-card__name--title">
-          {id ? (
-            <Link
-              to={id.toString()}
-              className="repo-card__name"
-              aria-label={name}
-            >
-              {name}
-            </Link>
-          ) : name}
-        </h3>
-        {stargazers_count !== undefined
-                && stargazers_count >= 0 && (
-                <div className="repo-card__point">
-                  <span className="icon--purple">&#9733;</span>
-                  &nbsp;
-                  {stargazers_count.toLocaleString(currentLocale)}
-                </div>
-        )}
-        {updated_at && (
-        <span className="repo-card__point repo-card__point--last-edited">
-          {`${t('last_update')}:`}
-          &nbsp;
-          {`${formatDate(updated_at, currentLocale)}`}
-        </span>
-        )}
-        {html_url && (
-        <div className="repo-card__point">
-          <a
-            href={html_url}
-            className="repo-card__name repo-card__name--link"
-            aria-label={t('repo')}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <svg className="repo-card__image--octocat">
-              <image href={`${process.env.PUBLIC_URL}/github-logo.svg`} width="17" height="17" />
-            </svg>
-            {new URL(html_url).pathname.slice(1)}
-          </a>
+      <div className="repo-card__card">
+        <div className="repo-card__inner">
+          <h3 className="repo-card__name--title">
+            {id ? (
+              <Link
+                to={id.toString()}
+                className="repo-card__name repo-card__name--link"
+                aria-label={name}
+              >
+                {name}
+              </Link>
+            ) : name}
+          </h3>
+          <div className="repo-card__meta">
+            {stargazers_count !== undefined && stargazers_count >= 0 && (
+              <div className="repo-card__point">
+                <span className="icon--purple">&#9733;</span>
+                &nbsp;
+                {stargazers_count.toLocaleString(currentLocale)}
+              </div>
+            )}
+            {updated_at && (
+              <span className="repo-card__point repo-card__point--last-edited">
+                {`${t('last_update')}:`}
+                &nbsp;
+                {`${formatDate(updated_at, currentLocale)}`}
+              </span>
+            )}
+          </div>
         </div>
+        {html_url && (
+          <div className="repo-card__point">
+            <a
+              href={html_url}
+              className="repo-card__name repo-card__name--link"
+              aria-label={t('repo')}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg className="repo-card__image--octocat">
+                <image href={`${process.env.PUBLIC_URL}/github-logo.svg`} width="17" height="17" />
+              </svg>
+              {new URL(html_url).pathname.slice(1)}
+            </a>
+          </div>
         )}
       </div>
-      <br />
     </main>
   );
 }, shallowEqual);
