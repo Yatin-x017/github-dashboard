@@ -14,10 +14,11 @@
     display: flex;
     align-items: stretch;
     justify-content: center;
-    padding: 0;
+    padding: 1rem;
     border-top: none;
     aspect-ratio: 1 / 1;
     min-height: 24rem;
+    overflow: hidden;
 }
 
 .repo-list--item:hover .repo-card__card {
