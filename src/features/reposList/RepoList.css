@@ -2,8 +2,8 @@
     list-style: none;
     padding: 1rem;
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+    gap: 1.4rem;
 }
 
 .repos-list__container {
@@ -11,15 +11,16 @@
 }
 
 .repo-list--item {
-    padding: 1rem;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    padding: 0;
     border-top: none;
-    background: var(--white-base);
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(2,6,23,.06);
-    transition: transform .15s ease, box-shadow .18s ease, background-color .18s ease;
+    aspect-ratio: 1 / 1;
+    min-height: 24rem;
 }
 
-.repo-list--item:hover {
+.repo-list--item:hover .repo-card__card {
     transform: translateY(-6px);
     box-shadow: 0 14px 40px rgba(2,6,23,.12);
 }
