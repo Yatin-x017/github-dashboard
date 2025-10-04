@@ -50,6 +50,39 @@ const SearchInput = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
   [dispatch, setIsSearching, search, currentPage]);
 
+  // If the user provides a descriptive query (natural language), perform a
+  // lightweight AI-like semantic re-ranking on the fetched repositories.
+  useEffect(() => {
+    const isDescriptive = (q: string) => {
+      if (!q) return false;
+      const words = q.trim().split(/\s+/);
+      return q.length > 20 || words.length >= 3;
+    };
+
+    if (!isDescriptive(debouncedSearchTerm)) return;
+    if (!repos || repos.length === 0) return;
+
+    // Dynamically import the semantic utility to keep initial bundle small.
+    (async () => {
+      try {
+        const mod = await import('utils/semantic');
+        const { computeSimilarityScores } = mod;
+        // Build a getter that returns searchable text for a repo
+        const getter = (r: any) => `${r.name || ''} ${r.description || ''} ${(r.topics || []).join(' ')}`;
+        const ranked = computeSimilarityScores(debouncedSearchTerm, repos, getter);
+        if (ranked && ranked.length > 0) {
+          // import setRepos action from repos slice
+          const { setRepos } = await import('features/reposList/reposSlice');
+          // dispatch reordered repos to the store
+          dispatch(setRepos(ranked));
+        }
+      } catch (e) {
+        // ignore semantic ranking failures — fallback to default search
+        // console.debug('semantic ranking failed', e);
+      }
+    })();
+  }, [debouncedSearchTerm, repos, dispatch]);
+
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     dispatch(setCurrentPage(FIRST_PAGE));
