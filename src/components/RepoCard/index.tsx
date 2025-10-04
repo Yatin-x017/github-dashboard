@@ -31,8 +31,10 @@ const RepoCard = memo(({
     return () => { mounted = false; };
   }, [langs, languages_url]);
 
+  const primaryLang = (langs && langs.length > 0) ? langs[0] : (languages && languages.length > 0 ? languages[0] : undefined);
+
   const stackKeywords = ['JavaScript', 'TypeScript', 'React', 'Node', 'Python', 'Go', 'Ruby'];
-  const compatible = langs && langs.some(l => stackKeywords.includes(l)) ? 'Likely' : 'Unknown';
+  const compatible = (langs || languages) && (langs || languages)!.some(l => stackKeywords.includes(l)) ? 'Likely' : 'Unknown';
 
   const contributorsCount = contributors ? contributors.length : undefined;
   const communityHealth = (stargazers_count && contributorsCount) ? Math.min(100, Math.round((contributorsCount / Math.max(1, stargazers_count)) * 100)) : undefined;
