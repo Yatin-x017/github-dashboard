@@ -56,19 +56,21 @@ const Paginator = () => {
     totalPages > 1 ? (
       <div className="paginator__container">
         <button
-          className="paginator__button"
+          className="paginator__button prev"
           type="button"
           disabled={isFirstPage || noPages || isSearching}
           onClick={decreaseCurrentPage}
+          aria-label={t('previous')}
         >
           {t('previous')}
         </button>
         {paginator}
         <button
-          className="paginator__button"
+          className="paginator__button next"
           type="button"
           disabled={isLastPage || noPages || isSearching || isSearchEdgePage}
           onClick={increaseCurrentPage}
+          aria-label={t('next')}
         >
           {t('next')}
         </button>

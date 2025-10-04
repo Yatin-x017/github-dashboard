@@ -96,7 +96,7 @@ const RepoDetails = memo(forwardRef<HTMLHeadElement>((props, ref) => {
               </ul>
             </section>
             )}
-            <Scroller ref={ref} />
+            <Scroller />
           </>
         )}
     </div>

@@ -27,7 +27,6 @@ export const DEFAULT_DATE_FORMAT_OPTIONS = {
 export const ROUTES = {
   MAIN: '/',
   REPO_CARD: '/:id',
-  PROFILE: '/profile',
   NOT_FOUND: '*',
 };
 

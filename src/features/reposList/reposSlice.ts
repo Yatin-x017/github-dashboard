@@ -21,6 +21,12 @@ export const loadRepos = (q: string, page: number): AppThunk => async (dispatch:
   const repos = await fetchRepos(q, page);
 
   if (typeof repos === 'string') {
+    if (repos === 'RATE_LIMITED') {
+      // set empty and bail silently — UI can read window.__GITHUB_RATE_LIMITED__ to show banner
+      dispatch(reposSlice.actions.fetchRepos([]));
+      dispatch(setTotalPages(0));
+      return;
+    }
     // Instead of throwing (which bubbles to the ErrorBoundary), handle gracefully:
     log.error('Failed to load repositories:', repos);
     dispatch(reposSlice.actions.fetchRepos([]));

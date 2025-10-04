@@ -8,13 +8,16 @@ import { RootState } from 'app/rootReducer';
 import 'components/RepoCard/index.css';
 
 const RepoCard = memo(({
-  id, name, stargazers_count, updated_at, html_url, description, owner, contributors, languages,
+  id, name, stargazers_count, updated_at, html_url, description, owner, contributors, languages, language,
 }: Partial<Repo>) => {
   const { t } = useTranslation();
   const currentLocale = useSelector((state: RootState) => state.i18n.currentLocale);
 
+  // Use primary language provided by search results (language) or fallback to languages array
+  const primaryLang = language || (languages && languages.length > 0 ? languages[0] : undefined);
+
   const stackKeywords = ['JavaScript', 'TypeScript', 'React', 'Node', 'Python', 'Go', 'Ruby'];
-  const compatible = languages && languages.some(l => stackKeywords.includes(l)) ? 'Likely' : 'Unknown';
+  const compatible = primaryLang && stackKeywords.includes(primaryLang) ? 'Likely' : 'Unknown';
 
   const contributorsCount = contributors ? contributors.length : undefined;
   const communityHealth = (stargazers_count && contributorsCount) ? Math.min(100, Math.round((contributorsCount / Math.max(1, stargazers_count)) * 100)) : undefined;
@@ -46,6 +49,7 @@ const RepoCard = memo(({
                   </Link>
                 ) : name)}
               </h3>
+              {primaryLang && <span className="repo-card__language">{primaryLang}</span>}
               {description && <div className="repo-card__description">{description}</div>}
             </div>
           </div>
@@ -83,7 +87,8 @@ const RepoCard = memo(({
         <div className="repo-card__footer">
           <div className="repo-card__badges">
             <span className="repo-card__badge">Compatible: {compatible}</span>
-            {languages && languages.slice(0,3).map((l) => <span className="repo-card__badge" key={l}>{l}</span>)}
+            {primaryLang && <span className="repo-card__badge">{primaryLang}</span>}
+            {!primaryLang && languages && languages.slice(0,3).map((l) => <span className="repo-card__badge" key={l}>{l}</span>)}
           </div>
 
           {html_url && (
