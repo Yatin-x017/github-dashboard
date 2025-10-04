@@ -24,8 +24,7 @@ const RepoCard = memo(({
       <div className="repo-card__card">
         <div className="repo-card__inner">
           <div className="repo-card__left">
-            <img className="repo-card__logo" src={owner?.avatar_url || `${process.env.PUBLIC_URL}/github-logo.svg`} alt="owner" />
-            <div>
+            <div className="repo-card__title-wrap">
               <h3 className="repo-card__name--title">
                 {id ? (
                   <Link
