@@ -39,9 +39,9 @@ const RepoCard = memo(({
           const { fetchReadme } = await import('api/githubAPI');
           const { summarizeToWords } = await import('utils/summarize');
           const readme = await fetchReadme((owner as any).login, name);
-          if (typeof readme === 'string') {
+          if (readme) {
             const s = summarizeToWords(readme, 20);
-            if (!cancelled) setSummary(s);
+            if (!cancelled && s) setSummary(s);
           }
         }
         // Fallback to description
