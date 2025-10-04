@@ -94,6 +94,8 @@ export const fetchLanguages = async (url: string): Promise<string[] | [] | strin
   }
 };
 
+let warnedNoToken = false;
+
 axios.interceptors.request.use((config: Partial<IConfig> = {}) => {
   try {
     // Prefer token provided via environment variable REACT_APP_GITHUB_OAUTH_TOKEN
@@ -103,8 +105,9 @@ axios.interceptors.request.use((config: Partial<IConfig> = {}) => {
     if (token) {
       // eslint-disable-next-line no-param-reassign
       config.headers = { ...config.headers, Authorization: `token ${token}` };
-    } else {
+    } else if (!warnedNoToken) {
       // Log only once: missing token will cause unauthenticated requests with low rate limits
+      warnedNoToken = true;
       log.error('No GitHub OAuth token provided (set REACT_APP_GITHUB_OAUTH_TOKEN). Requests will be unauthenticated and rate-limited.');
       log.error(`Read the README Access token section for more details: ${PROJECT_REPO_LINK}#access-token`);
     }
