@@ -38,4 +38,6 @@ export const loadRepos = (q: string, page: number): AppThunk => async (dispatch:
   dispatch(setTotalPages(repos.total_count));
 };
 
+export const { fetchRepos: setRepos } = reposSlice.actions;
+
 export default reposSlice.reducer;
