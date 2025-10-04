@@ -62,14 +62,9 @@ export const fetchRepos = async (q: string, page: number): Promise<GetReposRespo
 };
 
 export const fetchRepoDetails = async (id: string): Promise<Repo | string> => {
-  try {
-    const response = await axios.get<Repo>(`${REPO_URL_BASE}/${id}`);
-
-    return response.data;
-  } catch (e) {
-    log.error(e);
-    return e.message;
-  }
+  const result = await requestWithRetry(() => axios.get<Repo>(`${REPO_URL_BASE}/${id}`));
+  if (typeof result === 'string') return result;
+  return (result as any).data as Repo;
 };
 
 /**
