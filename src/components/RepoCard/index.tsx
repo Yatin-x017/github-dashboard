@@ -79,17 +79,14 @@ const RepoCard = memo(({
           {html_url && (
             <div className="repo-card__point">
               <a
-                href={html_url}
-                className="repo-card__name repo-card__name--link"
-                aria-label={t('repo')}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <svg className="repo-card__image--octocat">
-                  <image href={`${process.env.PUBLIC_URL}/github-logo.svg`} width="17" height="17" />
-                </svg>
-                {new URL(html_url).pathname.slice(1)}
-              </a>
+              href={html_url}
+              className="repo-card__name repo-card__name--link"
+              aria-label={t('repo')}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {new URL(html_url).pathname.slice(1)}
+            </a>
             </div>
           )}
         </div>
