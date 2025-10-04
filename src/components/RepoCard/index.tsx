@@ -25,7 +25,7 @@ const RepoCard = memo(({
 
   return (
     <main className="repo-card__container">
-      <div className="repo-card__card" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+      <div className="repo-card__card">
         <div className="repo-card__inner">
           <div className="repo-card__left">
             <div className="repo-card__title-wrap">
