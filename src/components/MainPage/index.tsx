@@ -10,7 +10,7 @@ const MainPage = forwardRef<HTMLHeadElement>((props, ref) => (
     <SearchInput />
     <ReposList />
     <Paginator />
-    <Scroller ref={ref} />
+    <Scroller />
   </>
 ));
 
