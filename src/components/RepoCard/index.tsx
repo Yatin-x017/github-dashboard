@@ -26,7 +26,17 @@ const RepoCard = memo(({
           <div className="repo-card__left">
             <div className="repo-card__title-wrap">
               <h3 className="repo-card__name--title">
-                {id ? (
+                {html_url ? (
+                  <a
+                    href={html_url}
+                    className="repo-card__name repo-card__name--link"
+                    aria-label={name}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {name}
+                  </a>
+                ) : (id ? (
                   <Link
                     to={id.toString()}
                     className="repo-card__name repo-card__name--link"
@@ -34,7 +44,7 @@ const RepoCard = memo(({
                   >
                     {name}
                   </Link>
-                ) : name}
+                ) : name)}
               </h3>
               {description && <div className="repo-card__description">{description}</div>}
             </div>
