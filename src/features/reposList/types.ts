@@ -10,6 +10,8 @@ export type Repo = {
     contributors: Contributor[] | undefined,
     languages_url: string,
     languages: string[] | undefined,
+    // primary language provided by search API
+    language?: string,
 }
 
 export type Owner = {
