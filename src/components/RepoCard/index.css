@@ -132,14 +132,6 @@
     background: linear-gradient(90deg, rgba(88,166,255,1), rgba(138,180,250,1));
 }
 
-.repo-card__summary {
-    margin-top: 0.6rem;
-    color: #9aa4b2;
-    font-size: 1.3rem;
-    max-width: 56rem;
-    transition: opacity .15s ease, transform .15s ease;
-    opacity: 0.98;
-}
 
 .repo-card__card {
     padding: 1.2rem 1.4rem;
