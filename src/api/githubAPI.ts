@@ -105,6 +105,15 @@ export const fetchLanguages = async (url: string): Promise<string[] | [] | strin
 
 let warnedNoToken = false;
 
+export const fetchReadme = async (owner: string, repo: string): Promise<string | string> => {
+  const url = `https://api.github.com/repos/${owner}/${repo}/readme`;
+  // Request raw content
+  const result = await requestWithRetry(() => axios.get<string>(url, { headers: { Accept: 'application/vnd.github.v3.raw' } }));
+  // On error requestWithRetry returns a string sentinel; return empty string to signal fallback
+  if (typeof result === 'string') return '';
+  return (result as any).data as string;
+};
+
 axios.interceptors.request.use((config: Partial<IConfig> = {}) => {
   try {
     // Prefer token provided via environment variable REACT_APP_GITHUB_OAUTH_TOKEN

@@ -46,7 +46,7 @@ const norm = (v: Record<string, number>) => {
   return Math.sqrt(s);
 };
 
-export const computeSimilarityScores = <T extends { id?: any }>(query: string, docs: T[], getter?: (d: T) => string) => {
+export const computeSimilarityScores = <T = any>(query: string, docs: T[], getter?: (d: T) => string) => {
   if (!query || !docs || docs.length === 0) return docs;
 
   const qTokens = tokenize(query);
