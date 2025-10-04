@@ -107,7 +107,8 @@ a:hover,
 /* Repo list and cards */
 .theme-dark .repo-list { color: #9ec1ff; }
 .theme-dark .repos-list__container { background: transparent; }
-.theme-dark .repo-list--item { border-top: 1px solid #30363d; }
+.theme-dark .repo-list--item { border-top: 1px solid #30363d; transition: background-color .2s ease; }
+.theme-dark .repo-list--item:hover { background-color: rgba(88,166,255,.05); }
 .theme-dark .repo-card__name--link { color: #58a6ff; transition: color .2s ease; }
 .theme-dark .repo-card__name--link:hover, .theme-dark .repo-card__name--link:focus {
     color: #79b8ff; text-decoration: underline;
