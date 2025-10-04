@@ -122,6 +122,9 @@ const RepoCard = memo(({
 
         <div className="repo-card__footer">
           <div className="repo-card__badges">
+            {flag && <span className={`repo-card__flag repo-card__flag--${flag}`} aria-hidden>{
+              flag === 'red' ? 'Critical' : flag === 'yellow' ? 'At risk' : flag === 'green' ? 'Healthy' : flag === 'violet' ? 'Popular' : 'Info'
+            }</span>}
             <span className="repo-card__badge">Compatible: {compatible}</span>
             {primaryLang && <span className="repo-card__badge">{primaryLang}</span>}
             {!primaryLang && languages && languages.slice(0,3).map((l) => <span className="repo-card__badge" key={l}>{l}</span>)}
