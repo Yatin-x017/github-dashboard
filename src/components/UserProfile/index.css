@@ -1,7 +1,0 @@
-.user-profile__container { width: 100%; max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
-.user-profile__header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
-.user-profile__header h2 { font-size:2rem; color: var(--dbeeff, #dbeeff); }
-.user-profile__error { color: #ff6b6b; }
-.user-profile__empty { padding: 2rem; text-align: center; }
-.btn-link { background: transparent; border: 1px solid rgba(255,255,255,.06); color: inherit; padding: 0.4rem 0.8rem; border-radius: 6px; cursor:pointer; margin-left:0.6rem }
-.user-repos { list-style:none; padding:0; display:grid; gap:1rem }

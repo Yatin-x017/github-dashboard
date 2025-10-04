@@ -109,6 +109,20 @@
     font-weight: 600;
 }
 
+.repo-card__flag {
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.repo-card__flag--red { background: #ef4444; }
+.repo-card__flag--yellow { background: #f59e0b; color: #111; }
+.repo-card__flag--blue { background: #3b82f6; }
+.repo-card__flag--green { background: #10b981; }
+.repo-card__flag--violet { background: #8b5cf6; }
+
 .repo-card__language {
     display: inline-block;
     margin-top: 0.35rem;
@@ -131,6 +145,7 @@
     vertical-align: middle;
     background: linear-gradient(90deg, rgba(88,166,255,1), rgba(138,180,250,1));
 }
+
 
 .repo-card__card {
     padding: 1.2rem 1.4rem;
