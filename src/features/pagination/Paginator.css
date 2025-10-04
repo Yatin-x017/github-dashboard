@@ -1,42 +1,49 @@
 .paginator__container {
-    padding: 1rem 0;
+    padding: 1.5rem 0;
     display: flex;
     justify-content: center;
-    font-weight: 200;
+    font-weight: 400;
     position: relative;
+    gap: 0.4rem;
 }
 
 .paginator__button {
-    line-height: 1.5;
+    line-height: 1;
     text-align: center;
-    padding: 0.7rem 1.2rem;
-    color: var(--purple-base);
+    padding: 6px 10px;
+    color: var(--link-blue);
     cursor: pointer;
     user-select: none;
-    background: var(--white-base);
-    border: 1px solid var(--gray-e5);
+    background: transparent;
+    border: 1px solid rgba(27,31,35,0.12);
+    border-radius: 6px;
+    min-width: 36px;
+    height: 32px;
+    font-size: 13px;
 }
 
 .paginator__button:enabled:hover,
 .paginator__button:enabled:focus {
-    background-color: var(--lightblue);
+    background-color: rgba(27,31,35,0.04);
+    box-shadow: none;
 }
 
 .paginator__button:disabled {
     color: var(--lightgray);
     cursor: default;
+    opacity: 0.6;
 }
 
 .paginator__button--pressed {
-    color: var(--white-base) !important;
-    border: 1px solid var(--lightgray);
-    background-color: var(--purple-base);
-    background-image: var(--purple-gradient);
+    background: var(--link-blue);
+    color: white !important;
+    border-color: var(--link-blue);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
 
-.paginator__button--pressed:hover {
-    background-image: var(--reverse-purple-gradient);
-}
+/* make prev/next have chevrons similar to GitHub */
+.paginator__button.prev::before { content: '<'; margin-right: 6px; }
+.paginator__button.next::after { content: '>'; margin-left: 6px; }
 
 @media (max-width: 675px) {
     .paginator__button:not(:first-child):not(:last-child):not(.paginator__button--pressed) {
