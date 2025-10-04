@@ -87,7 +87,8 @@ const RepoCard = memo(({
         <div className="repo-card__footer">
           <div className="repo-card__badges">
             <span className="repo-card__badge">Compatible: {compatible}</span>
-            {(langs || languages) && (langs || languages)!.slice(0,3).map((l) => <span className="repo-card__badge" key={l}>{l}</span>)}
+            {primaryLang && <span className="repo-card__badge">{primaryLang}</span>}
+            {!primaryLang && languages && languages.slice(0,3).map((l) => <span className="repo-card__badge" key={l}>{l}</span>)}
           </div>
 
           {html_url && (
