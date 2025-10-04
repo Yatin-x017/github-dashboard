@@ -30,13 +30,22 @@ const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 async function requestWithRetry<T>(fn: () => Promise<T>, retries = 3, backoff = 500): Promise<T | string> {
   return fn().catch(async (err) => {
     const status = err && err.response && err.response.status;
+    if (status === 403) {
+      // GitHub rate-limited or forbids access — set global flag and return sentinel
+      try {
+        // eslint-disable-next-line no-undef
+        if (typeof window !== 'undefined') window.__GITHUB_RATE_LIMITED__ = true;
+      } catch (e) {
+        // ignore
+      }
+      return 'RATE_LIMITED';
+    }
+
     if ((status === 429 || status === 502 || status === 503 || status === 504) && retries > 0) {
       // transient error, retry with exponential backoff
       await sleep(backoff);
       return requestWithRetry(fn, retries - 1, backoff * 2);
     }
-
-    log.error(err);
 
     // for other errors return the message to preserve existing API
     return (err && err.message) || 'Request failed';
