@@ -1,40 +1,23 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { shallowEqual, useSelector } from 'react-redux';
 import { Repo } from 'features/reposList/types';
 import { formatDate } from 'utils/helpers';
 import { RootState } from 'app/rootReducer';
-import { fetchLanguages } from 'api/githubAPI';
 import 'components/RepoCard/index.css';
 
 const RepoCard = memo(({
-  id, name, stargazers_count, updated_at, html_url, description, owner, contributors, languages, languages_url,
+  id, name, stargazers_count, updated_at, html_url, description, owner, contributors, languages, language,
 }: Partial<Repo>) => {
   const { t } = useTranslation();
   const currentLocale = useSelector((state: RootState) => state.i18n.currentLocale);
 
-  const [langs, setLangs] = useState<string[] | undefined>(languages as string[] | undefined);
-  useEffect(() => {
-    let mounted = true;
-    if (!langs && languages_url) {
-      (async () => {
-        const res = await fetchLanguages(languages_url);
-        if (!mounted) return;
-        if (typeof res === 'string') {
-          setLangs([]);
-        } else {
-          setLangs(res);
-        }
-      })();
-    }
-    return () => { mounted = false; };
-  }, [langs, languages_url]);
-
-  const primaryLang = (langs && langs.length > 0) ? langs[0] : (languages && languages.length > 0 ? languages[0] : undefined);
+  // Use primary language provided by search results (language) or fallback to languages array
+  const primaryLang = language || (languages && languages.length > 0 ? languages[0] : undefined);
 
   const stackKeywords = ['JavaScript', 'TypeScript', 'React', 'Node', 'Python', 'Go', 'Ruby'];
-  const compatible = (langs || languages) && (langs || languages)!.some(l => stackKeywords.includes(l)) ? 'Likely' : 'Unknown';
+  const compatible = primaryLang && stackKeywords.includes(primaryLang) ? 'Likely' : 'Unknown';
 
   const contributorsCount = contributors ? contributors.length : undefined;
   const communityHealth = (stargazers_count && contributorsCount) ? Math.min(100, Math.round((contributorsCount / Math.max(1, stargazers_count)) * 100)) : undefined;
