@@ -109,7 +109,8 @@ export const fetchReadme = async (owner: string, repo: string): Promise<string |
   const url = `https://api.github.com/repos/${owner}/${repo}/readme`;
   // Request raw content
   const result = await requestWithRetry(() => axios.get<string>(url, { headers: { Accept: 'application/vnd.github.v3.raw' } }));
-  if (typeof result === 'string') return result;
+  // On error requestWithRetry returns a string sentinel; return empty string to signal fallback
+  if (typeof result === 'string') return '';
   return (result as any).data as string;
 };
 
