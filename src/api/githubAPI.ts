@@ -96,20 +96,21 @@ export const fetchLanguages = async (url: string): Promise<string[] | [] | strin
 
 axios.interceptors.request.use((config: Partial<IConfig> = {}) => {
   try {
-    // eslint-disable-next-line global-require
-    const { GITHUB_OAUTH_TOKEN } = require('secret.json');
+    // Prefer token provided via environment variable REACT_APP_GITHUB_OAUTH_TOKEN
+    // (create-react-app exposes REACT_APP_* vars to the browser at build time)
+    const token = process?.env?.REACT_APP_GITHUB_OAUTH_TOKEN || (typeof window !== 'undefined' && (window as any).__GITHUB_OAUTH_TOKEN__);
 
-    if (!GITHUB_OAUTH_TOKEN) {
-      throw new Error('No github OAuth Access Token provided or config field key "GITHUB_OAUTH_TOKEN" is misspelled.');
+    if (token) {
+      // eslint-disable-next-line no-param-reassign
+      config.headers = { ...config.headers, Authorization: `token ${token}` };
+    } else {
+      // Log only once: missing token will cause unauthenticated requests with low rate limits
+      log.error('No GitHub OAuth token provided (set REACT_APP_GITHUB_OAUTH_TOKEN). Requests will be unauthenticated and rate-limited.');
+      log.error(`Read the README Access token section for more details: ${PROJECT_REPO_LINK}#access-token`);
     }
-
-    // eslint-disable-next-line no-param-reassign
-    config.headers = { ...config.headers, Authorization: `token ${GITHUB_OAUTH_TOKEN}` };
   } catch (e) {
     log.error(e);
-    log.error(`Read the README Access token section for more details: ${PROJECT_REPO_LINK}#access-token`);
-  } finally {
-    // eslint-disable-next-line no-unsafe-finally
-    return config;
   }
+
+  return config;
 });
