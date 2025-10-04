@@ -22,6 +22,41 @@ const RepoCard = memo(({
   const contributorsCount = contributors ? contributors.length : undefined;
   const communityHealth = (stargazers_count && contributorsCount) ? Math.min(100, Math.round((contributorsCount / Math.max(1, stargazers_count)) * 100)) : undefined;
 
+  // Determine a colored flag representing repo health / issues / status
+  const computeFlag = () => {
+    // priority checks
+    const text = `${name || ''} ${(description || '')}`.toLowerCase();
+    if (text.includes('deprecated') || text.includes('unmaintained') || text.includes('archive')) return 'red';
+
+    // parse updated_at
+    try {
+      if (updated_at) {
+        const updated = new Date(updated_at).getTime();
+        const now = Date.now();
+        const days = (now - updated) / (1000 * 60 * 60 * 24);
+        if (days > 365) return 'red';
+        if (days > 180) return 'yellow';
+        if (days <= 30 && (communityHealth || 0) >= 30) return 'green';
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // low engagement
+    if ((contributorsCount === 0 || contributorsCount === undefined) && (stargazers_count || 0) < 10) return 'yellow';
+
+    // popular projects
+    if ((stargazers_count || 0) >= 5000) return 'violet';
+
+    // docs / examples
+    if (text.includes('example') || text.includes('demo') || text.includes('tutorial')) return 'blue';
+
+    // fallback
+    return 'blue';
+  };
+
+  const flag = computeFlag();
+
 
   return (
     <main className="repo-card__container">
