@@ -45,14 +45,16 @@
     height: 3rem;
     padding: 0 1.5rem;
     cursor: pointer;
-    background-color: var(--white-base);
-    border: 0.2px solid var(--gray-9);
+    background-color: transparent;
+    color: var(--white-base);
+    border: 0.2px solid rgba(255, 255, 255, 0.12);
     border-radius: 10rem;
 }
 
 .language-selector option {
     outline: 0;
     background-color: transparent;
+    color: var(--white-base);
 }
 
 .language-selector:focus {
