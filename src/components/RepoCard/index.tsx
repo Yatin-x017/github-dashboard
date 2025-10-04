@@ -173,7 +173,7 @@ const RepoCard = memo(({
               <button type="button" className="repo-card__emoji-add" onClick={(e) => { e.stopPropagation(); setPickerOpen((v) => !v); }} aria-expanded={pickerOpen} aria-label="add-flag">➕</button>
 
               {pickerOpen && (
-                <div className="repo-card__emoji-picker" role="menu" aria-label="flag-picker">
+                <div className="repo-card__emoji-picker" role="menu" aria-label="flag-picker" ref={pickerRef}>
                   {emojiOptions.map((opt) => (
                     <button key={opt.flag} type="button" className={`repo-card__emoji repo-card__emoji--${opt.flag}`} onClick={() => toggleFlag(opt.flag)} aria-pressed={flags.includes(opt.flag)}>
                       <span className="repo-card__emoji-icon">{opt.emoji}</span>
