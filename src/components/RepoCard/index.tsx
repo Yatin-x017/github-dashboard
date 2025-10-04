@@ -122,6 +122,27 @@ const RepoCard = memo(({
 
         <div className="repo-card__footer">
           <div className="repo-card__badges">
+            {/* Emoji flag reactions */}
+            <div className="repo-card__emoji-reactions" ref={null}>
+              {flags && flags.map((f) => (
+                <button key={f} type="button" className={`repo-card__emoji repo-card__emoji--${f}`} onClick={() => toggleFlag(f)} aria-label={`flag-${f}`}>
+                  {f === 'red' ? '🔴' : f === 'yellow' ? '🟡' : f === 'green' ? '🟢' : f === 'violet' ? '🟣' : '🔵'}
+                </button>
+              ))}
+              <button type="button" className="repo-card__emoji-add" onClick={(e) => { e.stopPropagation(); setPickerOpen((v) => !v); }} aria-expanded={pickerOpen} aria-label="add-flag">➕</button>
+
+              {pickerOpen && (
+                <div className="repo-card__emoji-picker" role="menu" aria-label="flag-picker">
+                  {emojiOptions.map((opt) => (
+                    <button key={opt.flag} type="button" className={`repo-card__emoji repo-card__emoji--${opt.flag}`} onClick={() => toggleFlag(opt.flag)} aria-pressed={flags.includes(opt.flag)}>
+                      <span className="repo-card__emoji-icon">{opt.emoji}</span>
+                      <span className="repo-card__emoji-label">{opt.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {flag && <span className={`repo-card__flag repo-card__flag--${flag}`} aria-hidden>{
               flag === 'red' ? 'Critical' : flag === 'yellow' ? 'At risk' : flag === 'green' ? 'Healthy' : flag === 'violet' ? 'Popular' : 'Info'
             }</span>}
