@@ -57,6 +57,47 @@ const RepoCard = memo(({
 
   const flag = computeFlag();
 
+  // Emoji reaction flags (persisted in localStorage)
+  const [flags, setFlags] = useState<string[]>([]);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const pickerRef = useRef<HTMLDivElement | null>(null);
+
+  const emojiOptions = [
+    { flag: 'red', emoji: '🔴', label: 'Critical' },
+    { flag: 'yellow', emoji: '🟡', label: 'At risk' },
+    { flag: 'blue', emoji: '🔵', label: 'Info' },
+    { flag: 'green', emoji: '🟢', label: 'Healthy' },
+    { flag: 'violet', emoji: '🟣', label: 'Popular' },
+  ];
+
+  useEffect(() => {
+    // load flags for this repo
+    if (!id) return;
+    const { getFlagsFor } = require('utils/flags');
+    const f = getFlagsFor(id);
+    setFlags(f);
+  }, [id]);
+
+  const toggleFlag = (f: string) => {
+    if (!id) return;
+    const { toggleFlagFor } = require('utils/flags');
+    const updated = toggleFlagFor(id, f as any);
+    setFlags(updated);
+    setPickerOpen(false);
+  };
+
+  // close picker when clicking outside
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => {
+      if (!pickerOpen) return;
+      if (!pickerRef.current) return;
+      if (!(e.target instanceof Node)) return;
+      if (!pickerRef.current.contains(e.target)) setPickerOpen(false);
+    };
+    document.addEventListener('click', onDoc);
+    return () => document.removeEventListener('click', onDoc);
+  }, [pickerOpen]);
+
 
   return (
     <main className="repo-card__container">
