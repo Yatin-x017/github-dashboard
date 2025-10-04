@@ -28,9 +28,7 @@ interface IConfig {
 const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 async function requestWithRetry<T>(fn: () => Promise<T>, retries = 3, backoff = 500): Promise<T | string> {
-  try {
-    return await fn();
-  } catch (err) {
+  return fn().catch(async (err) => {
     const status = err && err.response && err.response.status;
     if ((status === 429 || status === 502 || status === 503 || status === 504) && retries > 0) {
       // transient error, retry with exponential backoff
@@ -42,7 +40,7 @@ async function requestWithRetry<T>(fn: () => Promise<T>, retries = 3, backoff = 
 
     // for other errors return the message to preserve existing API
     return (err && err.message) || 'Request failed';
-  }
+  });
 }
 
 export const fetchRepos = async (q: string, page: number): Promise<GetReposResponse | string> => {
