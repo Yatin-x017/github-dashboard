@@ -66,6 +66,7 @@ const RepoCard = memo(({
                   </Link>
                 ) : name)}
               </h3>
+              {primaryLang && <span className="repo-card__language">{primaryLang}</span>}
               {description && <div className="repo-card__description">{description}</div>}
             </div>
           </div>
