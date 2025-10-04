@@ -74,20 +74,15 @@ export const fetchRepoDetails = async (id: string): Promise<Repo | string> => {
  * sorts them by the number of commits per contributor in descending order.
  */
 export const fetchContributors = async (url: string): Promise<Contributor[] | string> => {
-  try {
-    const config = {
-      params: {
-        per_page: CONTRIBUTORS_PER_PAGE,
-      },
-    };
+  const config = {
+    params: {
+      per_page: CONTRIBUTORS_PER_PAGE,
+    },
+  };
 
-    const response = await axios.get<Contributor[]>(url, config);
-
-    return response.data;
-  } catch (e) {
-    log.error(e);
-    return e.message;
-  }
+  const result = await requestWithRetry(() => axios.get<Contributor[]>(url, config));
+  if (typeof result === 'string') return result;
+  return (result as any).data as Contributor[];
 };
 
 /**
