@@ -117,6 +117,9 @@ a:hover,
     color: #eaf6ff; text-decoration: underline;
 }
 .theme-dark .repo-card__card { background: #0f1419; box-shadow: 0 6px 28px rgba(2,6,23,.38); }
+.theme-dark .repo-card__badge { background: rgba(234,246,255,.03); color: #cfe8ff; border: 1px solid rgba(234,246,255,.04); }
+.theme-dark .repo-card__description { color: #8b949e; }
+.theme-dark .repo-card__name--link { color: #eaf6ff; }
 .theme-dark .icon--gray { color: #8b949e; }
 
 /* Paginator */
