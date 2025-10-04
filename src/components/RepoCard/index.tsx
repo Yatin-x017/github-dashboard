@@ -22,44 +22,6 @@ const RepoCard = memo(({
   const contributorsCount = contributors ? contributors.length : undefined;
   const communityHealth = (stargazers_count && contributorsCount) ? Math.min(100, Math.round((contributorsCount / Math.max(1, stargazers_count)) * 100)) : undefined;
 
-  const [hovered, setHovered] = useState(false);
-  const [summary, setSummary] = useState<string | null>(null);
-  const [loadingSummary, setLoadingSummary] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    if (!hovered) return undefined;
-    if (summary) return undefined; // already have summary
-
-    const load = async () => {
-      setLoadingSummary(true);
-      try {
-        // Try to fetch README via API using owner.login and name
-        if (owner && (owner as any).login && name) {
-          const { fetchReadme } = await import('api/githubAPI');
-          const { summarizeToWords } = await import('utils/summarize');
-          const readme = await fetchReadme((owner as any).login, name);
-          if (readme) {
-            const s = summarizeToWords(readme, 20);
-            if (!cancelled && s) setSummary(s);
-          }
-        }
-        // Fallback to description
-        if (!summary && description) {
-          const { summarizeToWords } = await import('utils/summarize');
-          const s = summarizeToWords(description, 20);
-          if (!cancelled) setSummary(s);
-        }
-      } catch (e) {
-        // ignore errors
-      } finally {
-        if (!cancelled) setLoadingSummary(false);
-      }
-    };
-
-    load();
-    return () => { cancelled = true; };
-  }, [hovered]);
 
   return (
     <main className="repo-card__container">
