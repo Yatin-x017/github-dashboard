@@ -105,12 +105,6 @@ export const fetchLanguages = async (url: string): Promise<string[] | [] | strin
 
 let warnedNoToken = false;
 
-export const fetchUserRepos = async (username: string, per_page = 100): Promise<Repo[] | string> => {
-  const result = await requestWithRetry(() => axios.get<Repo[]>(`https://api.github.com/users/${username}/repos`, { params: { per_page } }));
-  if (typeof result === 'string') return result;
-  return (result as any).data as Repo[];
-};
-
 axios.interceptors.request.use((config: Partial<IConfig> = {}) => {
   try {
     // Prefer token provided via environment variable REACT_APP_GITHUB_OAUTH_TOKEN
