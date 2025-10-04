@@ -10,6 +10,7 @@ import 'app/App.css';
 const MainPage = lazy(() => import('components/MainPage'));
 const NotFoundPage = lazy(() => import('components/NotFoundPage'));
 const RepoDetails = lazy(() => import('features/repoDetails/RepoDetails'));
+const UserProfile = lazy(() => import('components/UserProfile'));
 
 // TODO: cache api calls https://developer.github.com/v3/#conditional-requests
 const App = () => {
