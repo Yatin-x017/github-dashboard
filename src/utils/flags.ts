@@ -1,49 +1,33 @@
-const STORAGE_KEY = 'repo_flags_v1';
+// Simple localStorage-backed flag store for repo items.
+// Keyed by repo id.
 
-type FlagName = 'red' | 'yellow' | 'blue' | 'green' | 'violet';
+const KEY_PREFIX = 'repo_flags_';
 
-const loadAll = (): Record<string, FlagName[]> => {
+export const getFlagsFor = (id: any): string[] => {
   try {
-    const raw = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
-    return raw ? JSON.parse(raw) : {};
+    const raw = localStorage.getItem(`${KEY_PREFIX}${id}`);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed;
+    return [];
   } catch (e) {
-    return {};
+    return [];
   }
 };
 
-const saveAll = (data: Record<string, FlagName[]>) => {
+export const setFlagsFor = (id: any, flags: string[]) => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    localStorage.setItem(`${KEY_PREFIX}${id}`, JSON.stringify(flags));
+    return flags;
   } catch (e) {
-    // ignore
+    return flags;
   }
 };
 
-export const getFlagsFor = (repoId: string | number): FlagName[] => {
-  const all = loadAll();
-  return all[String(repoId)] || [];
+export const toggleFlagFor = (id: any, flag: string): string[] => {
+  const current = getFlagsFor(id);
+  const exists = current.includes(flag);
+  const updated = exists ? current.filter((f) => f !== flag) : [...current, flag];
+  setFlagsFor(id, updated);
+  return updated;
 };
-
-export const toggleFlagFor = (repoId: string | number, flag: FlagName): FlagName[] => {
-  const all = loadAll();
-  const key = String(repoId);
-  const existing = new Set(all[key] || []);
-  if (existing.has(flag)) existing.delete(flag); else existing.add(flag);
-  all[key] = Array.from(existing);
-  saveAll(all);
-  return all[key];
-};
-
-export const setFlagsFor = (repoId: string | number, flags: FlagName[]) => {
-  const all = loadAll();
-  all[String(repoId)] = flags;
-  saveAll(all);
-};
-
-export const clearFlags = (repoId: string | number) => {
-  const all = loadAll();
-  delete all[String(repoId)];
-  saveAll(all);
-};
-
-export type { FlagName };

@@ -65,7 +65,7 @@ const RepoCard = memo(({
   const emojiOptions = [
     { flag: 'red', emoji: '🔴', label: 'Critical' },
     { flag: 'yellow', emoji: '🟡', label: 'At risk' },
-    { flag: 'blue', emoji: '🔵', label: 'Info' },
+    { flag: 'blue', emoji: '���', label: 'Info' },
     { flag: 'green', emoji: '🟢', label: 'Healthy' },
     { flag: 'violet', emoji: '🟣', label: 'Popular' },
   ];
@@ -73,6 +73,7 @@ const RepoCard = memo(({
   useEffect(() => {
     // load flags for this repo
     if (!id) return;
+    // import lazily to avoid circular deps
     const { getFlagsFor } = require('utils/flags');
     const f = getFlagsFor(id);
     setFlags(f);
@@ -164,7 +165,7 @@ const RepoCard = memo(({
         <div className="repo-card__footer">
           <div className="repo-card__badges">
             {/* Emoji flag reactions */}
-            <div className="repo-card__emoji-reactions" ref={null}>
+            <div className="repo-card__emoji-reactions" ref={pickerRef}>
               {flags && flags.map((f) => (
                 <button key={f} type="button" className={`repo-card__emoji repo-card__emoji--${f}`} onClick={() => toggleFlag(f)} aria-label={`flag-${f}`}>
                   {f === 'red' ? '🔴' : f === 'yellow' ? '🟡' : f === 'green' ? '🟢' : f === 'violet' ? '🟣' : '🔵'}
@@ -183,7 +184,6 @@ const RepoCard = memo(({
                 </div>
               )}
             </div>
-
             {flag && <span className={`repo-card__flag repo-card__flag--${flag}`} aria-hidden>{
               flag === 'red' ? 'Critical' : flag === 'yellow' ? 'At risk' : flag === 'green' ? 'Healthy' : flag === 'violet' ? 'Popular' : 'Info'
             }</span>}
